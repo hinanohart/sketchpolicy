@@ -47,15 +47,20 @@ sketchpolicy sketch ./hand_clip.mp4 --out ./sketched \
 
 ## What it measures
 
-<!--MEASURED@S6: the table below is regenerated from bench_results/v0.1.0a1.json at S6; do not hand-edit-->
+The numbers below come from `bench_results/v0.1.0a1.json`, produced by
+`python scripts/measure.py` on the build machine (Linux WSL2, Python 3.12,
+numpy 2.4 / scipy 1.17 / pyarrow 24). They are **operational** metrics —
+round-trip validity, determinism, the feasibility filter, CPU throughput and a
+replay smoke test. They are **not** accuracy or policy-success metrics (there is
+no robot ground truth in this benchmark). Re-run `measure.py` to regenerate.
 
 | metric | value |
 | --- | --- |
-| augment round-trip schema-valid | `<!--MEASURED@S6-->` |
-| same-seed bit-exact determinism | `<!--MEASURED@S6-->` |
-| reject-resample discards infeasible | `<!--MEASURED@S6-->` |
-| MediaPipe Hands CPU throughput | `<!--MEASURED@S6-->` |
-| pybullet replay smoke | `<!--MEASURED@S6-->` |
+| augment round-trip schema-valid | ✓ (recovered actions within 1e-6) |
+| same-seed bit-exact determinism | ✓ |
+| reject-resample discards infeasible | ✓ (3 of 8 draws rejected on the boundary fixture) |
+| MediaPipe Hands CPU throughput | 66.4 fps (480×640, synthetic-frame throughput, not detection accuracy) |
+| pybullet replay smoke | ✓ (max IK residual 0.01 m on a reachable clip) |
 
 ## Scope & honest limitations
 

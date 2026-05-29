@@ -1,0 +1,39 @@
+{
+  "version": "0.1.0a1",
+  "generated_utc": "2026-05-29T03:51:11.344231+00:00",
+  "env": {
+    "python": "3.12.3",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "pyarrow": "24.0.0"
+  },
+  "measurements": {
+    "augment_roundtrip_ok": true,
+    "deterministic_bit_exact": true,
+    "reject_resample_discards_infeasible": {
+      "ok": true,
+      "n_drawn": 8,
+      "n_rejected": 3,
+      "reject_reasons": {
+        "out_of_reach": 3
+      }
+    },
+    "mediapipe_cpu_fps": {
+      "available": true,
+      "fps": 66.4,
+      "frames": 64,
+      "resolution": "480x640",
+      "mode": "synthetic-frames-throughput",
+      "note": "CPU inference throughput on synthetic frames; not a detection-accuracy metric."
+    },
+    "pybullet_replay_smoke": {
+      "available": true,
+      "ok": true,
+      "n_frames": 12,
+      "max_residual_m": 0.01,
+      "reachable_fraction": 1.0
+    }
+  },
+  "claim_note": "Operational metrics only. No policy success-rate, sim-to-real or accuracy claim is made or measurable here (there is no robot ground truth in this benchmark)."
+}
