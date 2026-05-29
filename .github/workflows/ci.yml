@@ -1,0 +1,88 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    # Torch-free core path across OSes. The optional ingest/replay tests are
+    # deselected here so this matrix proves the extra-free install is green.
+    name: core
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - run: pytest -q -p no:cacheprovider -m "not replay and not ingest"
+
+  replay:
+    # pybullet works headless (DIRECT) on Linux; this job also enforces the
+    # coverage floor (mediapipe real-video path is honestly omitted).
+    name: replay-and-coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev,replay]"
+      - run: pytest -q -p no:cacheprovider -m "not ingest" --cov=sketchpolicy --cov-report=term-missing --cov-fail-under=85
+
+  ingest:
+    # Experimental MediaPipe path. Needs system GL libs + the model, so it is
+    # advisory only: a failure here must not block the merge.
+    name: ingest-advisory
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y libgles2 libegl1 libglib2.0-0
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev,ingest]"
+      - name: fetch hand model
+        run: |
+          mkdir -p "$HOME/.cache/sketchpolicy"
+          curl -L -o "$HOME/.cache/sketchpolicy/hand_landmarker.task" \
+            https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
+      - run: pytest -q -p no:cacheprovider -m ingest
+
+  clean-clone:
+    # Prove a plain `pip install .` from a fresh checkout yields a working CLI.
+    name: clean-clone
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: pip install .
+      - run: sketchpolicy --help
+      - run: sketchpolicy doctor
+      - run: python -c "import sketchpolicy; print(sketchpolicy.__version__)"
