@@ -11,8 +11,9 @@
 end-effector poses, and produces additional schema-valid episodes by applying
 **deterministic kinematic transforms** (viewpoint / object-pose / planar
 position / time-warp) sampled with a **low-discrepancy Sobol sequence** and
-filtered by a **reject-and-resample feasibility test** (out-of-reach and
-self-intersection are discarded). No simulator, no neural network, no GPU.
+filtered by a **reject-and-resample feasibility test** (variants that leave the
+reachable shell, dip below the table, exit the workspace box, or enter the base
+keep-out cylinder are discarded). No simulator, no neural network, no GPU.
 
 It also ships an *experimental* "sketch" adapter that turns a monocular video
 of a **human hand** into an end-effector trajectory using MediaPipe Hands
@@ -67,13 +68,20 @@ no robot ground truth in this benchmark). Re-run `measure.py` to regenerate.
 **What sketchpolicy CLAIMS (and tests):**
 
 - Given a valid EE-action `LeRobotDataset` v3.0 input, it emits **schema-valid**
-  v3.0 output that round-trips against a pinned schema fixture.
+  v3.0 output that round-trips through its own torch-free reader against the
+  declared v3.0 schema. With the optional `[lerobot]` extra installed, an
+  advisory test also loads the output with the real `lerobot-dataset` reader.
 - Transforms are **deterministic**: the same `--seed` produces bit-exact output.
-- The feasibility filter **rejects** out-of-reach / self-intersecting variants
-  and resamples to hit the requested count.
+- The feasibility filter **rejects** variants that leave the reachable shell,
+  dip below the table, exit the workspace box, or enter the base keep-out
+  cylinder, and resamples to hit the requested count.
 - It runs on **CPU** with no torch in the core install.
 
 **What sketchpolicy does NOT claim (hard limits):**
+
+- ❌ The feasibility filter is a **kinematic-envelope** check, not a full
+  collision check: it does **not** test robot-mesh self-intersection (there is
+  no robot mesh in the no-IK representation).
 
 - ❌ It does **not** improve any policy's success rate. It is a data-shaping
   tool; downstream training quality is out of scope and untested here.

@@ -70,6 +70,7 @@ addopts = "-q"
 markers = [
     "ingest: tests that require the optional [ingest] extra (mediapipe/opencv)",
     "replay: tests that require the optional [replay] extra (pybullet)",
+    "lerobot: tests that require the optional [lerobot] extra (heavy: torch+CUDA)",
 ]
 
 [tool.coverage.run]

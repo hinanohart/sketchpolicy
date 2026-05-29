@@ -12,9 +12,11 @@ from __future__ import annotations
 
 from sketchpolicy.eeplan import ACTION_DIM
 
-#: The v3.0 codebase version tag. Verified against
-#: ``ledataset.datasets.lerobot_dataset.CODEBASE_VERSION`` by the optional
-#: ``[lerobot]`` cross-check test (see tests/test_lerobot_compat.py).
+#: The v3.0 codebase version tag, grepped from the lerobot-dataset wheel source
+#: at build time (``ledataset.datasets.lerobot_dataset.CODEBASE_VERSION``). When
+#: the optional ``[lerobot]`` extra is installed, tests/test_lerobot_compat.py
+#: asserts this equals the installed value and loads our output with the real
+#: reader; that test self-skips otherwise.
 CODEBASE_VERSION = "v3.0"
 
 # -- directory layout (mirrors ledataset.datasets.utils) --------------------

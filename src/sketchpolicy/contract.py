@@ -21,6 +21,7 @@ NON_CLAIMS: tuple[str, ...] = (
     "Augments the proprioceptive / action stream only (EE pose + gripper); v0.1 output is action/state-only.",
     "Parallel-jaw gripper only in v0.1 (no dexterous / bimanual).",
     "Uses MediaPipe Hands only for hand pose; does NOT use MANO / HaMeR / WiLoR.",
+    "Feasibility is a kinematic-envelope check (reach/floor/box/base-keepout); it does NOT test robot-mesh self-collision.",
 )
 
 #: The disclaimer shown at the top of every write command and embedded in the

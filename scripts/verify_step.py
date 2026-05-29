@@ -92,6 +92,29 @@ STEPS: dict[str, tuple[list[str], list[str]]] = {
 }
 
 
+def _check_bench() -> bool:
+    """Non-vacuous S6 check: the bench JSON exists and its measurements are real
+    (non-null operational results), and it carries the no-accuracy-claim note."""
+    import json
+
+    path = ROOT / "bench_results" / "v0.1.0a1.json"
+    if not path.exists():
+        print("  [MISSING] bench_results/v0.1.0a1.json")
+        return False
+    data = json.loads(path.read_text())
+    m = data.get("measurements", {})
+    ok = (
+        m.get("augment_roundtrip_ok") is True
+        and m.get("deterministic_bit_exact") is True
+        and m.get("reject_resample_discards_infeasible", {}).get("ok") is True
+        and "no policy" in data.get("claim_note", "").lower()
+    )
+    print(
+        f"  [{'OK' if ok else 'FAIL'}] bench measurements are real + no-accuracy-claim note present"
+    )
+    return ok
+
+
 def verify(step: str, dry_run: bool) -> bool:
     if step == "S3":
         files, tests = STEPS[step]
@@ -101,6 +124,8 @@ def verify(step: str, dry_run: bool) -> bool:
         return False
     files, tests = STEPS[step]
     files_ok = all(_exists(f) for f in files)
+    if step == "S6":  # non-vacuous: validate bench content, not just file existence
+        return files_ok and (dry_run or _check_bench())
     if dry_run or not tests:
         return files_ok
     return files_ok and _run_tests(tests)
