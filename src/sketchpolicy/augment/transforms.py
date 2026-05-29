@@ -133,23 +133,24 @@ def _apply_time_warp(plan: EEPlan, gamma: float) -> EEPlan:
     if t < 2:
         return plan
 
+    # Warp in normalised frame-parameter space, not timestamp space. The phase
+    # axis ``linspace(0, 1, t)`` is always strictly increasing, so SLERP never
+    # sees duplicate key times even when the source dataset has repeated
+    # timestamps (e.g. a paused demo) -- which EEPlan permits (non-decreasing).
     phase = np.linspace(0.0, 1.0, t)
-    warped = phase**gamma  # monotonic in [0, 1], endpoints fixed
-    span = plan.timestamps[-1] - plan.timestamps[0]
-    sample_t = plan.timestamps[0] + warped * span
+    warped = phase**gamma  # query points, monotonic in [0, 1], endpoints fixed
 
-    # Linear resample of position and gripper at the warped sample times.
+    # Linear resample of position and gripper along the phase axis.
     new_pos = np.empty_like(plan.positions)
     for c in range(3):
-        new_pos[:, c] = np.interp(sample_t, plan.timestamps, plan.positions[:, c])
-    new_gripper = np.interp(sample_t, plan.timestamps, plan.gripper)
+        new_pos[:, c] = np.interp(warped, phase, plan.positions[:, c])
+    new_gripper = np.interp(warped, phase, plan.gripper)
 
-    # SLERP resample of orientation.
+    # SLERP resample of orientation against the strictly-increasing phase axis.
     q_xyzw = _quat_wxyz_to_xyzw(plan.quaternions)
-    slerp = Slerp(plan.timestamps, Rotation.from_quat(q_xyzw))
-    # Clamp to the key-time range to avoid float overshoot at the endpoints.
-    sample_t_clamped = np.clip(sample_t, plan.timestamps[0], plan.timestamps[-1])
-    new_quat = _quat_xyzw_to_wxyz(slerp(sample_t_clamped).as_quat())
+    slerp = Slerp(phase, Rotation.from_quat(q_xyzw))
+    warped_clamped = np.clip(warped, 0.0, 1.0)  # guard float overshoot at ends
+    new_quat = _quat_xyzw_to_wxyz(slerp(warped_clamped).as_quat())
     flip = new_quat[:, 0] < 0
     new_quat[flip] = -new_quat[flip]
 

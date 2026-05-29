@@ -1,7 +1,7 @@
 """README honesty tests: no leftover placeholders, no overclaim, numbers traceable.
 
 The headline throughput number in the README must equal the value in the
-committed ``bench_results/v0.1.0a1.json`` (ship-and-yank lesson: README numbers
+committed ``bench_results/v0.1.0a2.json`` (ship-and-yank lesson: README numbers
 are measured, never invented). CI does not regenerate the bench file, so the two
 committed artifacts stay in lock-step.
 """
@@ -16,7 +16,7 @@ from sketchpolicy.contract import scan_for_banned_phrases
 _ROOT = Path(__file__).resolve().parents[1]
 _README = (_ROOT / "README.md").read_text(encoding="utf-8")
 _BENCH = json.loads(
-    (_ROOT / "bench_results" / "v0.1.0a1.json").read_text(encoding="utf-8")
+    (_ROOT / "bench_results" / "v0.1.0a2.json").read_text(encoding="utf-8")
 )
 
 

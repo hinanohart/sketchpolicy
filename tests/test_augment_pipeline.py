@@ -72,3 +72,24 @@ def test_infeasible_request_raises(source_plan: EEPlan) -> None:
 def test_non_positive_n_raises(source_plan: EEPlan) -> None:
     with pytest.raises(ValueError, match="n must be positive"):
         multiply(source_plan, n=0, seed=0)
+
+
+def test_repeated_timestamps_do_not_crash_time_warp() -> None:
+    # EEPlan permits non-decreasing timestamps (a paused/stationary demo can
+    # repeat one). The time-warp must handle this without crashing SLERP.
+    n = 10
+    ts = np.array([0.0, 0.1, 0.2, 0.2, 0.3, 0.4, 0.5, 0.5, 0.6, 0.7])  # two repeats
+    q = np.tile(np.array([1.0, 0.0, 0.0, 0.0]), (n, 1))
+    pos = np.cumsum(np.full((n, 3), 0.01), axis=0) + np.array([0.4, 0.0, 0.3])
+    plan = EEPlan(
+        positions=pos,
+        quaternions=q,
+        gripper=np.linspace(0.2, 0.8, n),
+        timestamps=ts,
+        fps=10.0,
+        task="paused demo",
+    )
+    res = multiply(plan, n=3, seed=0)  # must not raise
+    assert len(res.variants) == 3
+    for v in res.variants:
+        assert np.allclose(np.linalg.norm(v.quaternions, axis=1), 1.0, atol=1e-6)

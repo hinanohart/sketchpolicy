@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Produce bench_results/v0.1.0a1.json from live measurements.
+"""Produce bench_results/v<version>.json from live measurements.
 
 These are *operational* metrics only — round-trip validity, determinism, the
 feasibility filter, MediaPipe CPU throughput and a replay smoke test. No
@@ -25,7 +25,7 @@ from sketchpolicy.eeplan import EEPlan
 from sketchpolicy.emit import read_plans, write_dataset
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "bench_results" / "v0.1.0a1.json"
+OUT = ROOT / "bench_results" / f"v{__version__}.json"
 
 
 def _source_plan() -> EEPlan:
@@ -108,20 +108,28 @@ def measure_mediapipe_fps() -> dict:
         lm.detect_for_video(
             mp.Image(image_format=mp.ImageFormat.SRGB, data=frames[0]), 0
         )
-        t0 = time.perf_counter()
-        for i, f in enumerate(frames):
-            lm.detect_for_video(
-                mp.Image(image_format=mp.ImageFormat.SRGB, data=f), int((i + 1) * 33)
-            )
-        dt = time.perf_counter() - t0
+        # Median of 3 passes: per-frame CPU inference time is noisy under load,
+        # so a single sample is not representative (a reviewer flagged this).
+        ts = 0
+        fps_samples = []
+        for _ in range(3):
+            t0 = time.perf_counter()
+            for i, f in enumerate(frames):
+                lm.detect_for_video(
+                    mp.Image(image_format=mp.ImageFormat.SRGB, data=f),
+                    int(ts + (i + 1) * 33),
+                )
+            fps_samples.append(64 / (time.perf_counter() - t0))
+            ts += 64 * 33
         lm.close()
         return {
             "available": True,
-            "fps": round(64 / dt, 1),
+            "fps": round(float(np.median(fps_samples)), 1),
+            "fps_samples": [round(s, 1) for s in fps_samples],
             "frames": 64,
             "resolution": "480x640",
-            "mode": "synthetic-frames-throughput",
-            "note": "CPU inference throughput on synthetic frames; not a detection-accuracy metric.",
+            "mode": "synthetic-frames-throughput-median-of-3",
+            "note": "Median CPU inference throughput on synthetic frames; representative, not a detection-accuracy metric and machine-dependent.",
         }
     except Exception as exc:  # ImportError / OSError(GL) / model missing
         return {"available": False, "fps": None, "reason": str(exc)[:200]}

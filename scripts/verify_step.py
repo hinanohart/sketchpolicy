@@ -87,7 +87,7 @@ STEPS: dict[str, tuple[list[str], list[str]]] = {
         ["tests/test_doctor.py"],
     ),
     "S5": (["src/sketchpolicy/contract.py"], ["tests/test_contract.py"]),
-    "S6": (["bench_results/v0.1.0a1.json", "scripts/measure.py"], []),
+    "S6": (["bench_results/v0.1.0a2.json", "scripts/measure.py"], []),
     "S7": (["README.md"], ["tests/test_readme.py"]),
 }
 
@@ -97,9 +97,9 @@ def _check_bench() -> bool:
     (non-null operational results), and it carries the no-accuracy-claim note."""
     import json
 
-    path = ROOT / "bench_results" / "v0.1.0a1.json"
+    path = ROOT / "bench_results" / "v0.1.0a2.json"
     if not path.exists():
-        print("  [MISSING] bench_results/v0.1.0a1.json")
+        print("  [MISSING] bench_results/v0.1.0a2.json")
         return False
     data = json.loads(path.read_text(encoding="utf-8"))
     m = data.get("measurements", {})

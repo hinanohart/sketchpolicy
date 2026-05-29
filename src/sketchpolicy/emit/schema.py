@@ -3,9 +3,10 @@
 The constants and templates here mirror the public v3.0 layout (verified against
 the ``lerobot-dataset`` wheel source at build time). We deliberately reproduce
 *the format*, not the writer: sketchpolicy claims its output is **schema-valid**
-(round-trips against a pinned fixture and, optionally, the real reader), not
-byte-identical to lerobot's own serialiser. Keeping this in pure pyarrow is what
-lets the core install stay torch-free.
+(round-trips through its own torch-free reader against the declared schema and,
+optionally, loads with the real lerobot reader), not byte-identical to lerobot's
+own serialiser. Keeping this in pure pyarrow is what lets the core install stay
+torch-free.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0a1",
-  "generated_utc": "2026-05-29T03:51:11.344231+00:00",
+  "version": "0.1.0a2",
+  "generated_utc": "2026-05-29T14:53:58.007542+00:00",
   "env": {
     "python": "3.12.3",
     "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
@@ -21,11 +21,16 @@
     },
     "mediapipe_cpu_fps": {
       "available": true,
-      "fps": 66.4,
+      "fps": 59.0,
+      "fps_samples": [
+        54.6,
+        59.0,
+        61.0
+      ],
       "frames": 64,
       "resolution": "480x640",
-      "mode": "synthetic-frames-throughput",
-      "note": "CPU inference throughput on synthetic frames; not a detection-accuracy metric."
+      "mode": "synthetic-frames-throughput-median-of-3",
+      "note": "Median CPU inference throughput on synthetic frames; representative, not a detection-accuracy metric and machine-dependent."
     },
     "pybullet_replay_smoke": {
       "available": true,
