@@ -75,6 +75,11 @@ markers = [
 [tool.coverage.run]
 source = ["sketchpolicy"]
 branch = true
+# The real-video MediaPipe ingest path needs the [ingest] extra plus system GL
+# libraries, which the core (extra-free) CI matrix cannot exercise. It is covered
+# honestly by the optional [ingest] job and locally; excluding it here keeps the
+# core coverage gate meaningful rather than pretending the path ran.
+omit = ["*/ingest/mediapipe_hands.py"]
 
 [tool.coverage.report]
 exclude_lines = [
