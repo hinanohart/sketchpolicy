@@ -9,7 +9,16 @@ from sketchpolicy.ingest.types import HandTrack
 
 
 def fill_dropped(track: HandTrack) -> HandTrack:
-    """Linearly interpolate landmarks on frames where no hand was detected.
+    """Fill frames where no hand was detected by interpolating the landmarks.
+
+    Each landmark coordinate is linearly interpolated over the undetected
+    frames from the surrounding detected ones; a leading or trailing run of
+    undetected frames is held at the nearest detected value (endpoint
+    extrapolation, the default of :func:`numpy.interp`). Orientation is *not*
+    quaternion-interpolated here -- it is reconstructed downstream by
+    :func:`sketchpolicy.retarget.pose.hand_frame_quaternions` from these
+    interpolated landmarks, which keeps the hand-frame construction in one
+    place and guarantees unit norm.
 
     Raises:
         ValueError: if no frame has a detected hand.

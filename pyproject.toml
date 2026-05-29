@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sketchpolicy"
-version = "0.1.0a2"
+version = "0.1.0a3"
 description = "Simulator-free, CPU-only kinematic demonstration multiplier for LeRobotDataset v3.0 (pre-alpha bootstrap scaffold)"
 readme = "README.md"
 requires-python = ">=3.11"

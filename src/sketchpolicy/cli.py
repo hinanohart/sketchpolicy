@@ -113,11 +113,17 @@ def cmd_augment(args: argparse.Namespace) -> int:
     sources = read_plans(args.dataset)
     out_plans = []
     total_rejected = 0
-    for plan in sources:
+    for ep_idx, plan in enumerate(sources):
         if args.include_source:
             out_plans.append(plan)
         try:
-            res = multiply(plan, n=args.n, seed=args.seed, profile=args.profile)
+            # Offset the Sobol seed per source episode so a multi-episode input
+            # does not receive the identical transform-parameter sequence for
+            # every episode. Still fully deterministic in (seed, episode order);
+            # a single-episode input (ep_idx == 0) is bit-identical to before.
+            res = multiply(
+                plan, n=args.n, seed=args.seed + ep_idx, profile=args.profile
+            )
         except FeasibilityExhausted as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 1

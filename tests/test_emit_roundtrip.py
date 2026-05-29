@@ -9,9 +9,12 @@ import pytest
 
 from sketchpolicy.augment import multiply
 from sketchpolicy.emit import read_plans, validate_dataset, write_dataset
-from sketchpolicy.emit.schema import CODEBASE_VERSION, REQUIRED_INFO_KEYS
+from sketchpolicy.emit.reader import SchemaError
+from sketchpolicy.emit.schema import CODEBASE_VERSION, INFO_PATH, REQUIRED_INFO_KEYS
 from sketchpolicy.emit.writer import EmitError
 from sketchpolicy.eeplan import EEPlan
+
+# (SchemaError and INFO_PATH are used by the schema-validation tests below.)
 
 
 def test_write_creates_v30_layout(source_plan: EEPlan, tmp_path) -> None:
@@ -70,3 +73,39 @@ def test_inconsistent_fps_raises(source_plan: EEPlan, tmp_path) -> None:
     )
     with pytest.raises(EmitError, match="fps"):
         write_dataset([source_plan, other], tmp_path / "ds")
+
+
+def _tamper_info(root, **changes) -> None:
+    info_path = root / INFO_PATH
+    info = json.loads(info_path.read_text(encoding="utf-8"))
+    info.update(changes)
+    info_path.write_text(json.dumps(info), encoding="utf-8")
+
+
+def test_validate_missing_info_raises(tmp_path) -> None:
+    with pytest.raises(SchemaError, match="missing"):
+        validate_dataset(tmp_path / "does_not_exist")
+
+
+def test_validate_wrong_codebase_version_raises(source_plan: EEPlan, tmp_path) -> None:
+    out = write_dataset([source_plan], tmp_path / "ds")
+    _tamper_info(out, codebase_version="v2.1")
+    with pytest.raises(SchemaError, match="codebase_version"):
+        validate_dataset(out)
+
+
+def test_validate_missing_required_key_raises(source_plan: EEPlan, tmp_path) -> None:
+    out = write_dataset([source_plan], tmp_path / "ds")
+    info_path = out / INFO_PATH
+    info = json.loads(info_path.read_text(encoding="utf-8"))
+    info.pop(sorted(REQUIRED_INFO_KEYS)[0])
+    info_path.write_text(json.dumps(info), encoding="utf-8")
+    with pytest.raises(SchemaError, match="missing keys"):
+        validate_dataset(out)
+
+
+def test_validate_frame_count_mismatch_raises(source_plan: EEPlan, tmp_path) -> None:
+    out = write_dataset([source_plan], tmp_path / "ds")
+    _tamper_info(out, total_frames=999999)
+    with pytest.raises(SchemaError, match="total_frames"):
+        validate_dataset(out)

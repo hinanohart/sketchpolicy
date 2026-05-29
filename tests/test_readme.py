@@ -1,7 +1,7 @@
 """README honesty tests: no leftover placeholders, no overclaim, numbers traceable.
 
 The headline throughput number in the README must equal the value in the
-committed ``bench_results/v0.1.0a2.json`` (ship-and-yank lesson: README numbers
+committed ``bench_results/v0.1.0a3.json`` (ship-and-yank lesson: README numbers
 are measured, never invented). CI does not regenerate the bench file, so the two
 committed artifacts stay in lock-step.
 """
@@ -16,7 +16,7 @@ from sketchpolicy.contract import scan_for_banned_phrases
 _ROOT = Path(__file__).resolve().parents[1]
 _README = (_ROOT / "README.md").read_text(encoding="utf-8")
 _BENCH = json.loads(
-    (_ROOT / "bench_results" / "v0.1.0a2.json").read_text(encoding="utf-8")
+    (_ROOT / "bench_results" / "v0.1.0a3.json").read_text(encoding="utf-8")
 )
 
 
@@ -39,6 +39,22 @@ def test_readme_states_non_claims() -> None:
     assert "success rate" in low  # explicitly disclaims policy-performance gains
     assert "sim-to-real" in low  # explicit sim-to-real disclaimer
     assert "experimental" in low  # sketch path honestly flagged
+
+
+def test_readme_keeps_hard_limit_disclaimers() -> None:
+    """The ❌ hard-limit list must stay in the README verbatim enough that it
+    cannot be silently deleted without failing CI (honesty regression guard)."""
+    low = _README.lower()
+    for substring in (
+        "self-intersection",  # no robot-mesh self-collision check
+        "absolute metric scale",  # no monocular abs scale
+        "6-dof",  # no full 6-DoF from monocular video
+        "dexterous",  # parallel-jaw only
+        "mano",  # MediaPipe only, never MANO/HaMeR/WiLoR
+    ):
+        assert substring in low, (
+            f"README dropped the hard-limit disclaimer: {substring!r}"
+        )
 
 
 def test_bench_makes_no_accuracy_claim() -> None:

@@ -2,7 +2,7 @@
 
 **Simulator-free, CPU-only kinematic demonstration *multiplier* for `LeRobotDataset` v3.0.**
 
-> ⚠️ **Pre-alpha bootstrap scaffold (v0.1.0a2).** This is a research scaffold,
+> ⚠️ **Pre-alpha bootstrap scaffold (v0.1.0a3).** This is a research scaffold,
 > not a production tool. Every write command requires the explicit flag
 > `--i-understand-this-is-a-bootstrap-scaffold`. Read the
 > [Scope & honest limitations](#scope--honest-limitations) section before using.
@@ -48,7 +48,7 @@ sketchpolicy sketch ./hand_clip.mp4 --out ./sketched \
 
 ## What it measures
 
-The numbers below come from `bench_results/v0.1.0a2.json`, produced by
+The numbers below come from `bench_results/v0.1.0a3.json`, produced by
 `python scripts/measure.py` on the build machine (Linux WSL2, Python 3.12,
 numpy 2.4 / scipy 1.17 / pyarrow 24). They are **operational** metrics —
 round-trip validity, determinism, the feasibility filter, CPU throughput and a
@@ -60,7 +60,7 @@ no robot ground truth in this benchmark). Re-run `measure.py` to regenerate.
 | augment round-trip schema-valid | ✓ (recovered actions within 1e-6) |
 | same-seed bit-exact determinism | ✓ |
 | reject-resample discards infeasible | ✓ (3 of 8 draws rejected on the boundary fixture) |
-| MediaPipe Hands CPU throughput | 59.0 fps (480×640, median of 3, synthetic-frame throughput, not detection accuracy) |
+| MediaPipe Hands CPU throughput | 47.7 fps (480×640, median of 3, synthetic-frame throughput, not detection accuracy) |
 | pybullet replay smoke | ✓ (max IK residual 0.01 m on a reachable clip) |
 
 ## Scope & honest limitations
