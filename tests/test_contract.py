@@ -49,7 +49,7 @@ def test_non_claims_present() -> None:
 
 
 def test_readme_has_no_banned_phrases() -> None:
-    readme = (_REPO_ROOT / "README.md").read_text()
+    readme = (_REPO_ROOT / "README.md").read_text(encoding="utf-8")
     assert scan_for_banned_phrases(readme) == []
 
 

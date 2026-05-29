@@ -14,8 +14,10 @@ from pathlib import Path
 from sketchpolicy.contract import scan_for_banned_phrases
 
 _ROOT = Path(__file__).resolve().parents[1]
-_README = (_ROOT / "README.md").read_text()
-_BENCH = json.loads((_ROOT / "bench_results" / "v0.1.0a1.json").read_text())
+_README = (_ROOT / "README.md").read_text(encoding="utf-8")
+_BENCH = json.loads(
+    (_ROOT / "bench_results" / "v0.1.0a1.json").read_text(encoding="utf-8")
+)
 
 
 def test_no_unfilled_measure_placeholders() -> None:

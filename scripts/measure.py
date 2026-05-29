@@ -201,7 +201,7 @@ def main() -> int:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(results, indent=2, default=_coerce)
-    OUT.write_text(payload + "\n")
+    OUT.write_text(payload + "\n", encoding="utf-8")
     print(payload)
     return 0
 

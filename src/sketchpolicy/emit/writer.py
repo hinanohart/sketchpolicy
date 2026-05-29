@@ -209,7 +209,9 @@ def write_dataset(
         total_tasks=len(task_to_index),
         robot_type=robot_type,
     )
-    (out / schema.INFO_PATH).write_text(json.dumps(info, indent=4) + "\n")
+    (out / schema.INFO_PATH).write_text(
+        json.dumps(info, indent=4) + "\n", encoding="utf-8"
+    )
 
     # stats.json
     stats = {
@@ -223,7 +225,9 @@ def write_dataset(
         "index": _stats_for(np.asarray(global_index, np.float64).reshape(-1, 1)),
         "task_index": _stats_for(np.asarray(task_index, np.float64).reshape(-1, 1)),
     }
-    (out / schema.STATS_PATH).write_text(json.dumps(stats, indent=4) + "\n")
+    (out / schema.STATS_PATH).write_text(
+        json.dumps(stats, indent=4) + "\n", encoding="utf-8"
+    )
 
     assert ACTION_DIM == action_arr.shape[1]  # invariant: 8-D action layout
     return out

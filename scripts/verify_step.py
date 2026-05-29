@@ -101,7 +101,7 @@ def _check_bench() -> bool:
     if not path.exists():
         print("  [MISSING] bench_results/v0.1.0a1.json")
         return False
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     m = data.get("measurements", {})
     ok = (
         m.get("augment_roundtrip_ok") is True

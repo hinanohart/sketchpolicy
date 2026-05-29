@@ -25,7 +25,7 @@ class SchemaError(RuntimeError):
 
 
 def load_info(root: str | Path) -> dict:
-    return json.loads((Path(root) / schema.INFO_PATH).read_text())
+    return json.loads((Path(root) / schema.INFO_PATH).read_text(encoding="utf-8"))
 
 
 def validate_dataset(root: str | Path) -> dict:

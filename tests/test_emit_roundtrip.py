@@ -25,7 +25,7 @@ def test_write_creates_v30_layout(source_plan: EEPlan, tmp_path) -> None:
 
 def test_info_json_has_required_keys(source_plan: EEPlan, tmp_path) -> None:
     out = write_dataset([source_plan], tmp_path / "ds")
-    info = json.loads((out / "meta" / "info.json").read_text())
+    info = json.loads((out / "meta" / "info.json").read_text(encoding="utf-8"))
     assert REQUIRED_INFO_KEYS.issubset(info.keys())
     assert info["codebase_version"] == CODEBASE_VERSION
     assert info["total_episodes"] == 1
