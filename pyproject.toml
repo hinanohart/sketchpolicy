@@ -1,0 +1,84 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sketchpolicy"
+version = "0.1.0a1"
+description = "Simulator-free, CPU-only kinematic demonstration multiplier for LeRobotDataset v3.0 (pre-alpha bootstrap scaffold)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "hinanohart" }]
+keywords = ["lerobot", "robotics", "imitation-learning", "data-augmentation", "se3", "qmc"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Core path is torch-free and CPU-only by design.
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pyarrow>=14",
+]
+
+[project.urls]
+Homepage = "https://github.com/hinanohart/sketchpolicy"
+Repository = "https://github.com/hinanohart/sketchpolicy"
+
+[project.optional-dependencies]
+# Experimental "sketch" adapter: human-hand monocular video -> EE trajectory.
+ingest = [
+    "mediapipe>=0.10",
+    "opencv-python-headless>=4.8",
+    "av>=11",
+]
+# Read-only kinematic sanity replay (headless pybullet).
+replay = [
+    "pybullet>=3.2",
+]
+# Optional live-reader cross-verification. WARNING: pulls a heavy torch+CUDA
+# stack and forces Python>=3.12; NOT required for the core multiplier path.
+lerobot = [
+    "lerobot-dataset>=0.5",
+]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.90",
+    "coverage[toml]>=7.3",
+]
+all = [
+    "sketchpolicy[ingest]",
+    "sketchpolicy[replay]",
+]
+
+[project.scripts]
+sketchpolicy = "sketchpolicy.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sketchpolicy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "ingest: tests that require the optional [ingest] extra (mediapipe/opencv)",
+    "replay: tests that require the optional [replay] extra (pybullet)",
+]
+
+[tool.coverage.run]
+source = ["sketchpolicy"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

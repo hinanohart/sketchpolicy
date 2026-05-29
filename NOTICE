@@ -1,0 +1,43 @@
+sketchpolicy
+Copyright 2026 hinanohart
+
+This product includes software developed at hinanohart.
+
+Licensed under the Apache License, Version 2.0 (the "License").
+
+------------------------------------------------------------------------
+Third-party dependencies and their licenses
+------------------------------------------------------------------------
+
+This project depends, at runtime or optionally, on the following
+third-party packages. sketchpolicy does not vendor or redistribute their
+source; they are installed from their own distributions by pip. Their
+licenses are reproduced/linked by their respective projects.
+
+Core (required):
+  - numpy            BSD-3-Clause
+  - scipy            BSD-3-Clause
+  - pyarrow          Apache-2.0
+
+Optional extra [ingest] (experimental "sketch" hand-video adapter):
+  - mediapipe              Apache-2.0   (Google MediaPipe Hands, 21 landmarks)
+  - opencv-python-headless Apache-2.0
+  - av (PyAV)              BSD-3-Clause
+
+Optional extra [replay] (read-only kinematic sanity visualization):
+  - pybullet         zlib
+
+Optional extra [lerobot] (live-reader cross-verification only):
+  - lerobot-dataset  Apache-2.0
+    NOTE: this extra pulls a heavy torch + CUDA stack and is NOT required
+    for the core demonstration-multiplier path, which writes the
+    LeRobotDataset v3.0 format directly via pyarrow.
+
+------------------------------------------------------------------------
+Explicitly NOT used
+------------------------------------------------------------------------
+sketchpolicy deliberately does NOT depend on MANO, HaMeR, or WiLoR.
+Those projects carry non-commercial / research-only licenses (MANO) or
+require GPU ViT inference (HaMeR, WiLoR), which are incompatible with
+this project's Apache-2.0 distribution and CPU-only design goal.
+Hand pose, where used, comes solely from MediaPipe Hands (Apache-2.0).
