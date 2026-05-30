@@ -8,13 +8,13 @@ version = "0.1.0a3"
 description = "Simulator-free, CPU-only kinematic demonstration multiplier for LeRobotDataset v3.0 (pre-alpha bootstrap scaffold)"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = { text = "MIT" }
 authors = [{ name = "hinanohart" }]
 keywords = ["lerobot", "robotics", "imitation-learning", "data-augmentation", "se3", "qmc"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

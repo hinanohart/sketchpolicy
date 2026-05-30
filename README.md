@@ -17,7 +17,7 @@ keep-out cylinder are discarded). No simulator, no neural network, no GPU.
 
 It also ships an *experimental* "sketch" adapter that turns a monocular video
 of a **human hand** into an end-effector trajectory using MediaPipe Hands
-(Apache-2.0, CPU, 21 landmarks). "Film your hand → sketch a trajectory."
+(MIT, CPU, 21 landmarks). "Film your hand → sketch a trajectory."
 
 ## Install
 
@@ -97,4 +97,4 @@ HaMeR, or WiLoR (non-commercial / GPU-ViT — see `NOTICE`).
 
 ## License
 
-Apache-2.0. See `LICENSE` and `NOTICE`.
+MIT. See `LICENSE` and `NOTICE`.
